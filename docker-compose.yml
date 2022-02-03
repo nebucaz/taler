@@ -1,0 +1,144 @@
+version: '3.8'
+
+networks:
+  inet:
+  noinet:
+    internal: true
+  exchangenet:
+    internal: true
+  merchantnet:
+    internal: true
+
+services:
+
+  exchange:
+    container_name: exchange
+    build: ./exchange
+    image: "taler/exchange:latest"
+    environment:
+      TALER_EXCHANGEDB_POSTGRES_CONFIG: "postgres://user:pass@db-exchange/taler-exchange"
+      TALER_MASTER_PUBLIC_KEY: 5GQQMXWD5AHCAKRF7VFP03AXR5N5AT9DVRPTEZJRCDF1CFFTV1X0
+      TALER_EXCHANGE_BASE_URL: "http://exchange/exchange/"
+    networks:
+      - inet
+      - exchangenet
+    depends_on:
+      - db-exchange
+    volumes:
+      - ./exchange/etc/taler:/etc/taler
+      - ./exchange/etc/nginx/sites-available:/etc/nginx/conf.d
+      - ./exchange/signed-responses:/signed-responses
+    ports:
+      - "5884:5884"
+
+  exchange-offline:
+    container_name: exchange-offline
+    build: ./exchange-offline
+    image: "taler/exchange-offline:latest"
+    networks:
+      - noinet
+    tty: true
+    stdin_open: true
+    stop_grace_period: 1s
+    volumes:
+      - ./exchange-offline/etc/taler:/etc/taler
+      - exchange-offline-data:/var/lib/taler/exchange-offline
+
+  merchant:
+    container_name: merchant
+    build: ./merchant
+    image: "taler/merchant:latest"
+    networks:
+      - inet
+      - merchantnet
+    depends_on:
+      - db-merchant
+
+  libeufin:
+    container_name: libeufin
+    build: ./libeufin
+    image: "taler/libeufin:latest"
+    networks:
+      - inet
+
+  bank:
+    container_name: bank
+    build: ./bank
+    image: "taler/bank:latest"
+    networks:
+      - inet
+      - exchangenet
+    ports:
+      - "5882:5882"
+    depends_on:
+      - db-bank
+
+  cli:
+    container_name: cli
+    build: ./cli
+    image: "taler/cli:latest"
+    networks:
+      - inet
+      - exchangenet
+      - merchantnet
+    tty: true
+    stdin_open: true
+
+  db-exchange:
+    container_name: db-exchange
+    build: ./db-exchange
+    image: "taler/db-exchange:latest"
+    networks:
+      - exchangenet
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=db
+    expose:
+      - "5432"
+    healthcheck:
+      start_period: 30s
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-merchant:
+    container_name: db-merchant
+    build: ./db-merchant
+    image: "taler/db-merchant:latest"
+    networks:
+      - merchantnet
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-bank:
+    container_name: db-bank
+    build: ./db-bank
+    image: "taler/db-bank:latest"
+    networks:
+      - exchangenet
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - EXCHANGE_BANK_ACCOUNT_PASSWORD=UIakeh89!%6mcmia8)*
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+volumes:
+  exchange-offline-data:
+  bank-data:
