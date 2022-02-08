@@ -53,7 +53,11 @@ services:
       - merchantnet
     depends_on:
       - db-merchant
-
+    volumes:
+      - ./merchant/etc/taler:/etc/taler
+    ports:
+      - "8888:8888"
+ 
   libeufin:
     container_name: libeufin
     build: ./libeufin
@@ -113,6 +117,8 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=db
+    expose:
+      - "5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       start_period: 30s
