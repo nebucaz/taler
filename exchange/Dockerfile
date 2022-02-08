@@ -1,5 +1,6 @@
 FROM taler/base:latest
-RUN DEBIAN_FRONTENT=noninteractive apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
     nginx \
     taler-exchange \
     supervisor

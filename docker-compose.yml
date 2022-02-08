@@ -48,6 +48,8 @@ services:
     container_name: merchant
     build: ./merchant
     image: "taler/merchant:latest"
+    environment: 
+      - TALER_MASTER_PUBLIC_KEY: 5GQQMXWD5AHCAKRF7VFP03AXR5N5AT9DVRPTEZJRCDF1CFFTV1X0
     networks:
       - inet
       - merchantnet
@@ -55,6 +57,7 @@ services:
       - db-merchant
     volumes:
       - ./merchant/etc/taler:/etc/taler
+      - ./merchant/etc/supervisor/conf.d:/etc/supervisor/conf.d
     ports:
       - "8888:8888"
  
