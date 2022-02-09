@@ -27,6 +27,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     taler-merchant \
     supervisor
+#RUN useradd -U -ms /bin/bash -u 1001 taler-merchant-httpd
+USER taler-merchant-httpd
+#RUN taler-merchant-dbinit
 
 #RUN taler-merchant-dbinit && \
 #     taler-config -s MERCHANT-EXCHANGE-1 -o MASTER_KEY -V ${TALER_MASTER_PUBLIC_KEY}
