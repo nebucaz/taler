@@ -49,6 +49,7 @@ services:
     image: "taler/merchant:latest"
     environment: 
       - TALER_MASTER_PUBLIC_KEY:"5GQQMXWD5AHCAKRF7VFP03AXR5N5AT9DVRPTEZJRCDF1CFFTV1X0"
+      - TALER_MERCHANT_TOKEN:bzUZQJPFne5RP2uq0IYhBXXBz9TzqVW
     networks:
       - inet
       - merchantnet

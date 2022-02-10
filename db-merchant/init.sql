@@ -1,2 +1,2 @@
-CREATE USER "taler-merchant-httpd";
-CREATE DATABASE "talermerchant" OWNER "taler-merchant-httpd";
+CREATE USER "talermerchant" WITH PASSWORD 'merchantZ7a6';
+CREATE DATABASE "merchant" OWNER "talermerchant";

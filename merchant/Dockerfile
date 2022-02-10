@@ -27,9 +27,15 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     taler-merchant \
     supervisor
+
+# taler-merchant installation already adds the user (?)
 #RUN useradd -U -ms /bin/bash -u 1001 taler-merchant-httpd
+
+COPY docker-entrypoint.sh /usr/local/bin/
 USER taler-merchant-httpd
-#RUN taler-merchant-dbinit
+
+EXPOSE 8888
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 #RUN taler-merchant-dbinit && \
 #     taler-config -s MERCHANT-EXCHANGE-1 -o MASTER_KEY -V ${TALER_MASTER_PUBLIC_KEY}
