@@ -48,8 +48,8 @@ services:
     build: ./merchant
     image: "taler/merchant:latest"
     environment: 
-      - TALER_MASTER_PUBLIC_KEY:"5GQQMXWD5AHCAKRF7VFP03AXR5N5AT9DVRPTEZJRCDF1CFFTV1X0"
-      - TALER_MERCHANT_TOKEN:bzUZQJPFne5RP2uq0IYhBXXBz9TzqVW
+      TALER_MASTER_PUBLIC_KEY: "5GQQMXWD5AHCAKRF7VFP03AXR5N5AT9DVRPTEZJRCDF1CFFTV1X0"
+      TALER_MERCHANT_TOKEN: bzUZQJPFne5RP2uq0IYhBXXBz9TzqVW
     networks:
       - inet
       - merchantnet
@@ -60,13 +60,44 @@ services:
       - ./merchant/etc/supervisor/conf.d:/etc/supervisor/conf.d
     ports:
       - "8888:8888"
- 
-  libeufin:
-    container_name: libeufin
-    build: ./libeufin
-    image: "taler/libeufin:latest"
+  
+  db-shop:
+    image: mariadb 
+    volumes:
+      - db-shop-data:/var/lib/mysql
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    networks:
+      - merchantnet
+
+  shop:
+    depends_on:
+      - db-shop
+    image: wordpress:latest
+    volumes:
+      - shop-data:/var/www/html
+    ports:
+      - "8008:80"
     networks:
       - inet
+      - merchantnet
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db-shop:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+#  libeufin:
+#    container_name: libeufin
+#    build: ./libeufin
+#    image: "taler/libeufin:latest"
+#    networks:
+#      - inet
 
   bank:
     container_name: bank
@@ -152,3 +183,7 @@ services:
 volumes:
   exchange-offline-data:
   bank-data:
+  db-shop-data:
+  shop-data:
+  db-exchange-data:
+  db-merchant-data:
