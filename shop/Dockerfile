@@ -18,11 +18,3 @@ RUN wget https://downloads.wordpress.org/plugin/woocommerce.$WOOCOMMERCE_VERSION
 RUN mkdir -p /usr/src/wordpress/wp-content/plugins && \
     cd /usr/src/wordpress/wp-content/plugins && \
     git clone https://git.taler.net/gnu-taler-payment-for-woocommerce.git
-
-# wp-cli
-RUN cd /usr/bin && \
-    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O wp-cli.phar
-
-
-#    && rm -rf /var/lib/apt/lists/* 
-# https://git.taler.net/gnu-taler-payment-for-woocommerce.git
