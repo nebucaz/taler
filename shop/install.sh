@@ -26,5 +26,14 @@ docker-compose run shop-cli wp plugin install gnu-taler-payment-for-woocommerce 
 
 # config shop
 
-# create products
+# create category
+cat_create_msg = docker-compose run shop-cli wp wc product_cat create --name="Voucher" --user=shop_admin
+[[ $cat_create_msg =~ $pat ]] # $pat must be unquoted
+#echo "${BASH_REMATCH[0]}"
+#echo "${BASH_REMATCH[1]}"
+
+cat_id = $BASH_REMATCH[1]
+
+# create voucher products
+docker-compose run shop-cli wp wc product create --name="Netflix" --sku="NTFLX01" --regular_price=20.00 --virtual=1 --categories="{[${cat_id}]}" --user=shop_admin
 
