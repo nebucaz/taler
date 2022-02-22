@@ -77,14 +77,14 @@ services:
       - 3306
 
   shop:
-          # build: ./shop
-    #    image: "taler/shop:latest"
+    # build: ./shop
+    # image: "taler/shop:latest"
     depends_on:
       - db-shop
     image: wordpress:latest
     volumes:
-      - ./shop/html:/var/www/html
-            #- shop-data:/var/www/html
+      #- ./shop/html:/var/www/html
+      - shop-data:/var/www/html
     ports:
       - "8008:80"
     networks:
@@ -105,8 +105,8 @@ services:
     image: wordpress:cli
     user: xfs
     volumes:
-            # - shop-data:/var/www/html
-     - ./shop/html:/var/www/html
+     - shop-data:/var/www/html
+     #- ./shop/html:/var/www/html
     networks:
      - inet
      - merchantnet
