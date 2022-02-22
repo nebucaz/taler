@@ -73,8 +73,8 @@ services:
       MYSQL_PASSWORD: wordpress
     networks:
       - merchantnet 
-    ports:
-      - "3306:3306"
+    expose:
+      - 3306
 
   shop:
           # build: ./shop
@@ -83,8 +83,8 @@ services:
       - db-shop
     image: wordpress:latest
     volumes:
-            #      - ./shop/html:/var/www/html
-      - shop-data:/var/www/html
+      - ./shop/html:/var/www/html
+            #- shop-data:/var/www/html
     ports:
       - "8008:80"
     networks:
@@ -105,7 +105,8 @@ services:
     image: wordpress:cli
     user: xfs
     volumes:
-     - shop-data:/var/www/html
+            # - shop-data:/var/www/html
+     - ./shop/html:/var/www/html
     networks:
      - inet
      - merchantnet
